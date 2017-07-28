@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.azcorp.brutalweather.MainActivity">
+
+
+    <TextView
+        android:id="@+id/temp_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="36dp"
+        android:text="temp"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:drawablePadding="10dp"/>
+
+
+    <TextView
+        android:id="@+id/main_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="main"
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="desc"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/country_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="country"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/quote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="quote here"
+        android:textColor="@color/colorRed"
+        android:textSize="24sp" />
+
+</LinearLayout>

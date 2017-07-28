@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Brutal Weather</string>
+    <string-array name="above40to50">
+        <item>You may be too hot to handle. But\, so is this weather</item>
+        <item>Caution! Phone might melt (Not cause you\'re hot)</item>
+        <item>You\'ll be tired of Mothafucking sweat on your Mothafucking face</item>
+        <item>It\'s a bonfire, turn the A/C on, \nSun burnin\' everything you muthafuckas talk about</item>
+    </string-array>
+
+    <string-array name="above30to40">
+        <item>It\'s above 30. DAMN</item>
+        <item>Pretty hot, but your balls should be alright</item>
+    </string-array>
+    <string name="appwidget_text">Saucy quote of the day</string>
+    <string name="add_widget">Add widget</string>
+
+</resources>
