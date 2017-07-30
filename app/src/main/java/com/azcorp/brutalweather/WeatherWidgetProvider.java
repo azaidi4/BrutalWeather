@@ -3,11 +3,12 @@ package com.azcorp.brutalweather;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 
 /**
@@ -19,18 +20,26 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(refresh))
-            Log.i("onRecieve", "onReceive: IT WORKSSS");
 
         super.onReceive(context, intent);
+        if (intent.getAction().equals(refresh)) {
+            AppWidgetManager app = AppWidgetManager.getInstance(context);
+            ComponentName thisWidget = new ComponentName(context, WeatherWidgetProvider.class);
+            int[] appWidgetIDs = app.getAppWidgetIds(thisWidget);
+
+            onUpdate(context, app, appWidgetIDs);
+            Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
         // Construct the RemoteViews object
         RemoteViews views = buildUpdate(context);
+        ComponentName thisWidget = new ComponentName(context, WeatherWidgetProvider.class);
+
         // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        appWidgetManager.updateAppWidget(thisWidget, views);
     }
 
     @Override
@@ -57,12 +66,16 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
         SharedPreferences prefs = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         CharSequence phrase = prefs.getString("phrase", null);
 
-        Intent intent = new Intent(context, WeatherWidgetProvider.class);
-        intent.setAction(refresh);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        Intent refreshIntent = new Intent(context, WeatherWidgetProvider.class);
+        refreshIntent.setAction(refresh);
+        PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+        Intent clickIntent = new Intent(context, MainActivity.class);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, 0);
+
+        views.setOnClickPendingIntent(R.id.appwidget_refresh, refreshPendingIntent);
+        views.setOnClickPendingIntent(R.id.appwidget_text, clickPendingIntent);
         views.setTextViewText(R.id.appwidget_text, phrase);
-        views.setOnClickPendingIntent(R.id.appwidget_refresh, pendingIntent);
 
         return views;
     }

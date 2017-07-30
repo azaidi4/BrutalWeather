@@ -1,6 +1,7 @@
 package com.azcorp.brutalweather;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -20,6 +21,8 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
+        Intent i = new Intent(appContext, WeatherGPS.class);
+        appContext.startActivity(i);
 
         assertEquals("com.azcorp.brutalweather", appContext.getPackageName());
     }

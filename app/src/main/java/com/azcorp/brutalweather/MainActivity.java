@@ -1,19 +1,22 @@
 package com.azcorp.brutalweather;
 
-import android.appwidget.AppWidgetManager;
+import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,8 +35,10 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     final static String LOG_TAG = MainActivity.class.getSimpleName();
-    final static String OPENWEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?q=muscat&appid=80bc327138765b4192f811176b725ebe";
+    final static String OPENWEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=80bc327138765b4192f811176b725ebe";
     final static String WEATHER_ICON_URL = "http://openweathermap.org/img/w/";
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +46,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WeatherAsyncTask task = new WeatherAsyncTask();
-        task.execute();
+        task.execute(updateApiCallUrl());
     }
 
     private Weather parseJSONFromString(String weatherString) {
 
         if (weatherString != null) {
             try {
-
                 JSONObject root = new JSONObject(weatherString);
                 JSONArray weatherJson = root.getJSONArray("weather");
                 JSONObject mainJson = root.getJSONObject("main");
@@ -69,6 +73,42 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    //    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case MY_PERMISSIONS_REQUEST_LOCATION: {
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    Log.i(LOG_TAG, "onRequestPermissionsResult: works");
+//                } else {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                        this.finishAffinity();
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+    private String updateApiCallUrl() {
+
+        String url = OPENWEATHER_URL;
+        Log.i(LOG_TAG, "updateApiCallUrl Coarse: " + ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION));
+        Log.i(LOG_TAG, "updateApiCallUrl Fine: " + ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION));
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                MY_PERMISSIONS_REQUEST_LOCATION);
+        WeatherGPS gpsLoc = new WeatherGPS(getApplicationContext());
+        Location l = gpsLoc.getLocation();
+
+        if (l != null) {
+            String lat = Double.toString(l.getLatitude());
+            String lon = Double.toString(l.getLongitude());
+
+            Log.i(LOG_TAG, "updateApiCallUrl: " + lat + lon);
+
+            Toast.makeText(getApplicationContext(), "URL Updated", Toast.LENGTH_LONG).show();
+            return url.replace("{lat}", lat).replace("{lon}", lon);
+        }
+        return null;
+    }
 
     private void updateWeatherAttributes(Weather weather) {
 
@@ -93,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = this.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("phrase", weather.getWeatherPhrase());
-        editor.commit();
+        editor.apply();
 
     }
 
@@ -101,21 +141,19 @@ public class MainActivity extends AppCompatActivity {
         int floorTemperature = (int) Math.floor(weather.getTemperature());
         Resources resources = getResources();
         Random rand = new Random();
-        String[] tempArray = null;
+        String[] tempArray;
 
         if (isBetween(floorTemperature, 30, 40)) {
             tempArray = resources.getStringArray(R.array.above30to40);
             weather.setWeatherPhrase(tempArray[rand.nextInt(tempArray.length)]);
 
         } else if (isBetween(floorTemperature, 40, 50)) {
-//            tempArray = resources.getStringArray(R.array.above40to50);
-//            weather.setWeatherPhrase(tempArray[rand.nextInt(tempArray.length)]);
-            weather.setWeatherPhrase("Well You're SOL");
-        } else {
-//            weather.setWeatherPhrase("Well You're SOL");
             tempArray = resources.getStringArray(R.array.above40to50);
             weather.setWeatherPhrase(tempArray[rand.nextInt(tempArray.length)]);
-           // Log.i("@populateArrayList", "Temperature out of range");
+
+        } else {
+            weather.setWeatherPhrase("Well You're SOL");
+            Log.e("@populateArrayList", "Temperature out of range");
         }
     }
 
@@ -123,15 +161,15 @@ public class MainActivity extends AppCompatActivity {
         return lower <= x && x <= upper;
     }
 
-    private class WeatherAsyncTask extends AsyncTask<URL, Void, Weather> {
+    private class WeatherAsyncTask extends AsyncTask<String, Void, Weather> {
 
         @Override
-        protected Weather doInBackground(URL... params) {
+        protected Weather doInBackground(String... params) {
             URL url = null;
             try {
-                url = new URL(OPENWEATHER_URL);
+                url = new URL(params[0]);
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                e.getMessage();
             }
 
             String jsonString = makeHttpRequest(url);
@@ -143,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
             return weather;
         }
 
-        private Drawable generateWeatherIcon(String imageResourseID) {
+        private Drawable generateWeatherIcon(String imageResourceID) {
             StringBuilder output = new StringBuilder(WEATHER_ICON_URL);
-            output.append(imageResourseID).append(".png");
+            output.append(imageResourceID).append(".png");
 
             try {
                 URL url = new URL(output.toString());
@@ -155,9 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     urlConnection.connect();
                     InputStream input = urlConnection.getInputStream();
                     Bitmap weatherIcon = BitmapFactory.decodeStream(input);
-                    Drawable drawable = new BitmapDrawable(getResources(), weatherIcon);
-
-                    return drawable;
+                    return new BitmapDrawable(getResources(), weatherIcon);
                 }
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
@@ -221,13 +257,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void updateWeatherWidget() {
-        Intent intent = new Intent(this, WeatherWidgetProvider.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-
-        int[] ids = {R.id.appwidget_text};
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-
-        intent.putExtra("phrase", "hiii");
-    }
 }

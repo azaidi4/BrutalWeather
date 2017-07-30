@@ -14,7 +14,6 @@ class Weather {
     private String country;
     private String weatherPhrase;
     private String unit;
-    private Boolean isParsed;
     private String imageResourceID;
     private Drawable weatherIcon;
 
@@ -25,7 +24,6 @@ class Weather {
         this.country = country;
         this.unit = unit;
         this.weatherPhrase = null;
-        this.isParsed = true;
         this.imageResourceID = ID;
     }
 
@@ -43,10 +41,6 @@ class Weather {
 
     String getCountry() {
         return country;
-    }
-
-    Boolean isParsed() {
-        return isParsed;
     }
 
     void setWeatherPhrase(String weatherPhrase) {
