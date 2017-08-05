@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/appwidget_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#50cecece"
+    android:background="#CECECE"
     android:padding="@dimen/widget_margin">
 
     <TextView
@@ -11,11 +12,20 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_margin="8dp"
-        android:contentDescription="@string/appwidget_text"
         android:text="@string/appwidget_text"
         android:textColor="#ffffff"
-        android:textSize="24sp"
-        android:textStyle="bold|italic" />
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/appwidget_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/appwidget_text"
+        android:layout_centerHorizontal="true"
+        android:text="tempVal"
+        android:textColor="#ffffff"
+        android:textSize="36sp"
+        android:textStyle="bold" />
 
     <ImageButton
         android:id="@+id/appwidget_refresh"
@@ -24,10 +34,9 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:adjustViewBounds="true"
-        android:maxHeight="60dp"
-        android:maxWidth="60dp"
+        android:maxHeight="40dp"
+        android:maxWidth="40dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/icon_refresh"
-        />
+        android:src="@drawable/icon_refresh" />
 
 </RelativeLayout>

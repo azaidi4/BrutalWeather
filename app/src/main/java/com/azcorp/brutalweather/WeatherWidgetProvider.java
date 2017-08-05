@@ -16,13 +16,11 @@ import android.widget.Toast;
  */
 public class WeatherWidgetProvider extends AppWidgetProvider {
 
-    public static String refresh = "Refresh";
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
         super.onReceive(context, intent);
-        if (intent.getAction().equals(refresh)) {
+        if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
             AppWidgetManager app = AppWidgetManager.getInstance(context);
             ComponentName thisWidget = new ComponentName(context, WeatherWidgetProvider.class);
             int[] appWidgetIDs = app.getAppWidgetIds(thisWidget);
@@ -65,9 +63,10 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
 
         SharedPreferences prefs = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         CharSequence phrase = prefs.getString("phrase", null);
+        CharSequence temperature = prefs.getString("temperature", null);
 
         Intent refreshIntent = new Intent(context, WeatherWidgetProvider.class);
-        refreshIntent.setAction(refresh);
+        refreshIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Intent clickIntent = new Intent(context, MainActivity.class);
@@ -76,6 +75,7 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.appwidget_refresh, refreshPendingIntent);
         views.setOnClickPendingIntent(R.id.appwidget_text, clickPendingIntent);
         views.setTextViewText(R.id.appwidget_text, phrase);
+        views.setTextViewText(R.id.appwidget_temp, temperature);
 
         return views;
     }
