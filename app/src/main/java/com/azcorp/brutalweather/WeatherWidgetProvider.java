@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -16,16 +17,15 @@ import android.widget.Toast;
  */
 public class WeatherWidgetProvider extends AppWidgetProvider {
 
-    public static String refresh = "Refresh";
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
         super.onReceive(context, intent);
-        if (intent.getAction().equals(refresh)) {
+        if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
             AppWidgetManager app = AppWidgetManager.getInstance(context);
             ComponentName thisWidget = new ComponentName(context, WeatherWidgetProvider.class);
             int[] appWidgetIDs = app.getAppWidgetIds(thisWidget);
+
 
             onUpdate(context, app, appWidgetIDs);
             Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show();
@@ -65,17 +65,30 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
 
         SharedPreferences prefs = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         CharSequence phrase = prefs.getString("phrase", null);
+        CharSequence temperature = prefs.getString("temperature", null);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        int color = sharedPref.getInt("pref_color", 000000);
+
+        //Intent for refreshing weather widget attributes
         Intent refreshIntent = new Intent(context, WeatherWidgetProvider.class);
-        refreshIntent.setAction(refresh);
+        refreshIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         PendingIntent refreshPendingIntent = PendingIntent.getBroadcast(context, 0, refreshIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        Intent clickIntent = new Intent(context, MainActivity.class);
-        PendingIntent clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, 0);
-
         views.setOnClickPendingIntent(R.id.appwidget_refresh, refreshPendingIntent);
-        views.setOnClickPendingIntent(R.id.appwidget_text, clickPendingIntent);
+
+        //Intent for launching widget settings
+        Intent settingIntent = new Intent(context, SettingsActivity.class);
+        PendingIntent settingPendingIntent = PendingIntent.getActivity(context, 0, settingIntent, 0);
+        views.setOnClickPendingIntent(R.id.appwidget_text, settingPendingIntent);
+
+        //Intent for launching Application
+        Intent mainAppIntent = new Intent(context, MainActivity.class);
+        PendingIntent mainPendingIntent = PendingIntent.getActivity(context, 0, mainAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        views.setOnClickPendingIntent(R.id.appwidget_temp, mainPendingIntent);
+
         views.setTextViewText(R.id.appwidget_text, phrase);
+        views.setTextViewText(R.id.appwidget_temp, temperature);
+        views.setInt(R.id.appwidget_layout, "setBackgroundColor",  color);
 
         return views;
     }

@@ -5,12 +5,20 @@
         <item>Caution! Phone might melt (Not cause you\'re hot)</item>
         <item>You\'ll be tired of Mothafucking sweat on your Mothafucking face</item>
         <item>It\'s a bonfire, turn the A/C on, \nSun burnin\' everything you muthafuckas talk about</item>
+        <item></item>
     </string-array>
 
     <string-array name="above30to40">
         <item>It\'s above 30. DAMN</item>
         <item>Pretty hot, but your balls should be alright</item>
+        <item>You\'re gonna be LITTY</item>
+        <item></item>
     </string-array>
     <string name="appwidget_text">Saucy quote of the day</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_header_widget">Widget Configuration</string>
 
 </resources>

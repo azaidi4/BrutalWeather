@@ -2,6 +2,7 @@ package com.azcorp.brutalweather;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,12 +12,16 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,13 +42,16 @@ public class MainActivity extends AppCompatActivity {
     final static String LOG_TAG = MainActivity.class.getSimpleName();
     final static String OPENWEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=80bc327138765b4192f811176b725ebe";
     final static String WEATHER_ICON_URL = "http://openweathermap.org/img/w/";
-
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         WeatherAsyncTask task = new WeatherAsyncTask();
         task.execute(updateApiCallUrl());
@@ -57,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray weatherJson = root.getJSONArray("weather");
                 JSONObject mainJson = root.getJSONObject("main");
 
-                double weatherTemp = (mainJson.getDouble("temp") - 273.15);
+                int weatherTemp = (int) (mainJson.getDouble("temp") - 273.15);
                 String weatherTMain = weatherJson.getJSONObject(0).getString("main");
                 String weatherDesc = weatherJson.getJSONObject(0).getString("description");
                 String weatherCountry = root.getString("name");
@@ -72,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
+
 
     //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -103,8 +112,6 @@ public class MainActivity extends AppCompatActivity {
             String lon = Double.toString(l.getLongitude());
 
             Log.i(LOG_TAG, "updateApiCallUrl: " + lat + lon);
-
-            Toast.makeText(getApplicationContext(), "URL Updated", Toast.LENGTH_LONG).show();
             return url.replace("{lat}", lat).replace("{lon}", lon);
         }
         return null;
@@ -118,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
         TextView country = (TextView) findViewById(R.id.country_text_view);
         TextView quote = (TextView) findViewById(R.id.quote);
 
-        temp.setText(String.valueOf((int) Math.floor(weather.getTemperature()))
-                + (char) 0x00B0 + weather.getUnit());
+        temp.setText(String.valueOf(weather.getTemperature()) + (char) 0x00B0 + weather.getUnit());
 
         //Setting appropriate icon for weather
         weather.getWeatherIcon().setBounds(0, 0, 200, 200);
@@ -133,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = this.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("phrase", weather.getWeatherPhrase());
+        editor.putString("temperature", String.valueOf(weather.getTemperature())
+                + (char) 0x00B0 + weather.getUnit());
         editor.apply();
 
     }
@@ -257,4 +265,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 }

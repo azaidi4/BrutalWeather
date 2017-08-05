@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 
 class Weather {
 
-    private double temperature;
+    private int temperature;
     private String main;
     private String description;
     private String country;
@@ -17,7 +17,7 @@ class Weather {
     private String imageResourceID;
     private Drawable weatherIcon;
 
-    Weather(double temp, String main, String description, String country, String unit, String ID) {
+    Weather(int temp, String main, String description, String country, String unit, String ID) {
         this.temperature = temp;
         this.main = main;
         this.description = description;
@@ -27,7 +27,7 @@ class Weather {
         this.imageResourceID = ID;
     }
 
-    double getTemperature() {
+    int getTemperature() {
         return temperature;
     }
 
