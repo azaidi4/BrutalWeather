@@ -26,7 +26,6 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
             ComponentName thisWidget = new ComponentName(context, WeatherWidgetProvider.class);
             int[] appWidgetIDs = app.getAppWidgetIds(thisWidget);
 
-
             onUpdate(context, app, appWidgetIDs);
             Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show();
         }
@@ -68,7 +67,7 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
         CharSequence temperature = prefs.getString("temperature", null);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        int color = sharedPref.getInt("pref_color", 000000);
+        int color = sharedPref.getInt("pref_color", 0x00000);
 
         //Intent for refreshing weather widget attributes
         Intent refreshIntent = new Intent(context, WeatherWidgetProvider.class);
@@ -88,7 +87,7 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
 
         views.setTextViewText(R.id.appwidget_text, phrase);
         views.setTextViewText(R.id.appwidget_temperature, temperature);
-        views.setInt(R.id.appwidget_layout, "setBackgroundColor",  color);
+        views.setInt(R.id.appwidget_layout, "setBackgroundColor", color);
 
         return views;
     }
