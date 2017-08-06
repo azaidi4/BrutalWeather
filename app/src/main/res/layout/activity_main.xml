@@ -20,7 +20,6 @@
         android:layout_gravity="center_horizontal"
         android:drawablePadding="10dp"
         android:padding="36dp"
-        android:text="temp"
         android:textSize="48sp"
         android:textStyle="bold" />
 
@@ -29,7 +28,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="main"
         android:textSize="16sp" />
 
     <TextView
@@ -37,7 +35,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="desc"
         android:textSize="16sp" />
 
     <TextView
@@ -45,7 +42,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="country"
         android:textSize="16sp" />
 
     <TextView
@@ -53,7 +49,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="quote here"
         android:textColor="@color/colorRed"
         android:textSize="24sp" />
 
