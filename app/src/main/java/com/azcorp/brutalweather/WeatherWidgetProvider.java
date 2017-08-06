@@ -84,10 +84,10 @@ public class WeatherWidgetProvider extends AppWidgetProvider {
         //Intent for launching Application
         Intent mainAppIntent = new Intent(context, MainActivity.class);
         PendingIntent mainPendingIntent = PendingIntent.getActivity(context, 0, mainAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        views.setOnClickPendingIntent(R.id.appwidget_temp, mainPendingIntent);
+        views.setOnClickPendingIntent(R.id.appwidget_temperature, mainPendingIntent);
 
         views.setTextViewText(R.id.appwidget_text, phrase);
-        views.setTextViewText(R.id.appwidget_temp, temperature);
+        views.setTextViewText(R.id.appwidget_temperature, temperature);
         views.setInt(R.id.appwidget_layout, "setBackgroundColor",  color);
 
         return views;
